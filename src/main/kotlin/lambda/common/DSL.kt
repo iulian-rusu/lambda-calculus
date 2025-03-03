@@ -14,3 +14,5 @@ fun lambda(param: Symbol, body: () -> Term) = Abstraction(
     param = param,
     body = body()
 )
+
+fun lambda(param: String, body: () -> Term) = lambda(Symbol(param), body)
