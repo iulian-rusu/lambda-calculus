@@ -7,4 +7,5 @@ Currently, the following things are implemented:
 * Visitors and various algorithms:
   * Serialization to string.
   * Beta reduction.
-  * Substitution (used by beta reduction).
+  * Replacement of variables with some term.
+  * Transforming to de Brujin indexing form.

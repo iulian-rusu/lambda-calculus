@@ -4,7 +4,7 @@ package lambda.compiler.ast
  * Generic term of a Lambda Calculus program.
  */
 sealed interface Term {
-    fun <T> accept(visitor: TermVisitor<T>): T
+    fun <R> accept(visitor: TermVisitor<R>): R
 }
 
 /**
@@ -13,7 +13,7 @@ sealed interface Term {
  * @param name  The name of the variable
  */
 data class Variable(val name: String) : Term {
-    override fun <T> accept(visitor: TermVisitor<T>) = visitor.visitVariable(this)
+    override fun <R> accept(visitor: TermVisitor<R>) = visitor.visitVariable(this)
 }
 
 /**
@@ -23,7 +23,7 @@ data class Variable(val name: String) : Term {
  *  @param body     The returned body
  */
 data class Abstraction(val param: Variable, val body: Term) : Term {
-    override fun <T> accept(visitor: TermVisitor<T>) = visitor.visitAbstraction(this)
+    override fun <R> accept(visitor: TermVisitor<R>) = visitor.visitAbstraction(this)
 }
 
 /**
@@ -39,5 +39,5 @@ fun Abstraction.binds(variable: Variable) = param == variable
  * @param arg       The argument of the call
  */
 data class Application(val target: Term, val arg: Term) : Term {
-    override fun <T> accept(visitor: TermVisitor<T>) = visitor.visitApplication(this)
+    override fun <R> accept(visitor: TermVisitor<R>) = visitor.visitApplication(this)
 }
