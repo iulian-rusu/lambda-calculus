@@ -1,10 +1,10 @@
 package lambda.common.algorithm
 
-import lambda.compiler.ast.Application
 import lambda.compiler.ast.Abstraction
-import lambda.compiler.ast.Variable
+import lambda.compiler.ast.Application
 import lambda.compiler.ast.Term
 import lambda.compiler.ast.TermVisitor
+import lambda.compiler.ast.Variable
 
 /**
  * Serializes a Lambda Calculus term to a string.

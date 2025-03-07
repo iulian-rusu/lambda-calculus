@@ -12,14 +12,10 @@ operator fun DeBrujinTerm.invoke(arg: DeBrujinTerm) = DeBrujinApplication(
     arg = arg
 )
 
-fun lambda(expr: () -> DeBrujinTerm) = DeBrujinBinder(
-    expr = expr()
-)
+fun lambda(expr: () -> DeBrujinTerm) = DeBrujinBinder(expr())
 
 val Variable.constant
-    get() = DeBrujinConstant(value = name)
+    get() = DeBrujinConstant(name)
 
 val Int.index
-    get() = DeBrujinIndex(value = this)
-
-
+    get() = DeBrujinIndex(this)

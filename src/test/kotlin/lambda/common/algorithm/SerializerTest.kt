@@ -2,8 +2,8 @@ package lambda.common.algorithm
 
 import lambda.compiler.ast.Abstraction
 import lambda.compiler.ast.Application
-import lambda.compiler.ast.Variable
 import lambda.compiler.ast.Term
+import lambda.compiler.ast.Variable
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments

@@ -1,10 +1,10 @@
 package lambda.debrujin
 
-import lambda.compiler.ast.Application
 import lambda.compiler.ast.Abstraction
-import lambda.compiler.ast.Variable
+import lambda.compiler.ast.Application
 import lambda.compiler.ast.Term
 import lambda.compiler.ast.TermVisitor
+import lambda.compiler.ast.Variable
 import lambda.debrujin.ast.DeBrujinApplication
 import lambda.debrujin.ast.DeBrujinBinder
 import lambda.debrujin.ast.DeBrujinConstant

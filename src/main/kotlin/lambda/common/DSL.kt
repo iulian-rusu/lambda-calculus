@@ -1,9 +1,9 @@
 package lambda.common
 
-import lambda.compiler.ast.Application
 import lambda.compiler.ast.Abstraction
-import lambda.compiler.ast.Variable
+import lambda.compiler.ast.Application
 import lambda.compiler.ast.Term
+import lambda.compiler.ast.Variable
 
 operator fun Term.invoke(arg: Term) = Application(
     target = this,

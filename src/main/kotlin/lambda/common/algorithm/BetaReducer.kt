@@ -1,7 +1,7 @@
 package lambda.common.algorithm
 
-import lambda.compiler.ast.Application
 import lambda.compiler.ast.Abstraction
+import lambda.compiler.ast.Application
 import lambda.compiler.ast.Term
 import lambda.compiler.ast.TermTransformer
 

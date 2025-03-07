@@ -3,8 +3,8 @@ package lambda.common.algorithm
 import lambda.common.invoke
 import lambda.common.lambda
 import lambda.compiler.ast.Application
-import lambda.compiler.ast.Variable
 import lambda.compiler.ast.Term
+import lambda.compiler.ast.Variable
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments

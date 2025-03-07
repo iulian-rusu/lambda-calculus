@@ -2,7 +2,6 @@ package lambda.common.algorithm
 
 import lambda.common.invoke
 import lambda.common.lambda
-import lambda.compiler.ast.Application
 import lambda.compiler.ast.Variable
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
