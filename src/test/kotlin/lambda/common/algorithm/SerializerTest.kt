@@ -2,7 +2,7 @@ package lambda.common.algorithm
 
 import lambda.compiler.ast.Abstraction
 import lambda.compiler.ast.Application
-import lambda.compiler.ast.Symbol
+import lambda.compiler.ast.Variable
 import lambda.compiler.ast.Term
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -12,20 +12,20 @@ import kotlin.test.assertEquals
 
 class SerializerTest {
     @Test
-    fun `serializing a symbol returns expected results`() {
-        assertEquals("x", Symbol("x").serialize())
-        assertEquals("test", Symbol("test").serialize())
+    fun `serializing a variable returns expected results`() {
+        assertEquals("x", Variable("x").serialize())
+        assertEquals("test", Variable("test").serialize())
     }
 
     @Test
     fun `serializing an abstraction returns expected results`() {
-        val term = Abstraction(Symbol("x"), Symbol("x"))
+        val term = Abstraction(Variable("x"), Variable("x"))
         assertEquals("λx.x", term.serialize())
     }
 
     @Test
     fun `serializing an application returns expected results`() {
-        val term = Application(Symbol("x"), Symbol("x"))
+        val term = Application(Variable("x"), Variable("x"))
         assertEquals("x x", term.serialize())
     }
 
@@ -40,21 +40,21 @@ class SerializerTest {
         fun getTermsAndExpectedSerializations() = listOf(
             Arguments.of(
                 Application(
-                    Abstraction(Symbol("x"), Symbol("x")),
-                    Symbol("y")
+                    Abstraction(Variable("x"), Variable("x")),
+                    Variable("y")
                 ),
                 "(λx.x) y"
             ),
             Arguments.of(
                 Abstraction(
-                    Symbol("x"),
+                    Variable("x"),
                     Abstraction(
-                        Symbol("y"),
+                        Variable("y"),
                         Application(
-                            Symbol("x"),
+                            Variable("x"),
                             Application(
-                                Symbol("x"),
-                                Symbol("y")
+                                Variable("x"),
+                                Variable("y")
                             )
                         )
                     ),
@@ -63,15 +63,15 @@ class SerializerTest {
             ),
             Arguments.of(
                 Abstraction(
-                    Symbol("x"),
+                    Variable("x"),
                     Abstraction(
-                        Symbol("y"),
+                        Variable("y"),
                         Application(
                             Application(
-                                Symbol("x"),
-                                Symbol("x")
+                                Variable("x"),
+                                Variable("x")
                             ),
-                            Symbol("y")
+                            Variable("y")
                         )
                     ),
                 ),
@@ -80,28 +80,28 @@ class SerializerTest {
             Arguments.of(
                 Application(
                     Abstraction(
-                        Symbol("x"),
+                        Variable("x"),
                         Abstraction(
-                            Symbol("y"),
-                            Application(Symbol("x"), Symbol("y"))
+                            Variable("y"),
+                            Application(Variable("x"), Variable("y"))
                         )
                     ),
-                    Symbol("z")
+                    Variable("z")
                 ),
                 "(λx.λy.x y) z"
             ),
             Arguments.of(
                 Application(
                     Abstraction(
-                        Symbol("x1"),
+                        Variable("x1"),
                         Abstraction(
-                            Symbol("x2"),
-                            Application(Symbol("x1"), Symbol("x2"))
+                            Variable("x2"),
+                            Application(Variable("x1"), Variable("x2"))
                         )
                     ),
                     Abstraction(
-                        Symbol("x3"),
-                        Application(Symbol("x3"), Symbol("x3"))
+                        Variable("x3"),
+                        Application(Variable("x3"), Variable("x3"))
                     )
                 ),
                 "(λx1.λx2.x1 x2) (λx3.x3 x3)"
@@ -110,36 +110,36 @@ class SerializerTest {
                 Application(
                     Application(
                         Abstraction(
-                            Symbol("x1"),
+                            Variable("x1"),
                             Abstraction(
-                                Symbol("x2"),
-                                Application(Symbol("x1"), Symbol("x2"))
+                                Variable("x2"),
+                                Application(Variable("x1"), Variable("x2"))
                             )
                         ),
                         Abstraction(
-                            Symbol("x3"),
-                            Symbol("x3")
+                            Variable("x3"),
+                            Variable("x3")
                         )
                     ),
-                    Symbol("x4")
+                    Variable("x4")
                 ),
                 "(λx1.λx2.x1 x2) (λx3.x3) x4"
             ),
             Arguments.of(
                 Application(
                     Abstraction(
-                        Symbol("x1"),
+                        Variable("x1"),
                         Abstraction(
-                            Symbol("x2"),
-                            Application(Symbol("x1"), Symbol("x2"))
+                            Variable("x2"),
+                            Application(Variable("x1"), Variable("x2"))
                         )
                     ),
                     Application(
                         Abstraction(
-                            Symbol("x3"),
-                            Symbol("x3")
+                            Variable("x3"),
+                            Variable("x3")
                         ),
-                        Symbol("x4")
+                        Variable("x4")
                     )
                 ),
                 "(λx1.λx2.x1 x2) ((λx3.x3) x4)"
@@ -147,35 +147,35 @@ class SerializerTest {
             Arguments.of(
                 Application(
                     Abstraction(
-                        Symbol("x1"),
-                        Symbol("x1")
+                        Variable("x1"),
+                        Variable("x1")
                     ),
                     Application(
                         Application(
                             Abstraction(
-                                Symbol("x2"),
+                                Variable("x2"),
                                 Abstraction(
-                                    Symbol("x3"),
+                                    Variable("x3"),
                                     Abstraction(
-                                        Symbol("x4"),
+                                        Variable("x4"),
                                         Application(
-                                            Symbol("x2"),
+                                            Variable("x2"),
                                             Application(
-                                                Symbol("x3"),
-                                                Symbol("x4")
+                                                Variable("x3"),
+                                                Variable("x4")
                                             )
                                         )
                                     )
                                 )
                             ),
                             Abstraction(
-                                Symbol("x5"),
-                                Symbol("x5")
+                                Variable("x5"),
+                                Variable("x5")
                             ),
                         ),
                         Abstraction(
-                            Symbol("x6"),
-                            Symbol("x6")
+                            Variable("x6"),
+                            Variable("x6")
                         ),
                     )
                 ),

@@ -2,7 +2,7 @@ package lambda.common.algorithm
 
 import lambda.compiler.ast.Application
 import lambda.compiler.ast.Abstraction
-import lambda.compiler.ast.Symbol
+import lambda.compiler.ast.Variable
 import lambda.compiler.ast.Term
 import lambda.compiler.ast.TermVisitor
 
@@ -10,7 +10,7 @@ import lambda.compiler.ast.TermVisitor
  * Serializes a Lambda Calculus term to a string.
  */
 data object Serializer : TermVisitor<String> {
-    override fun visitSymbol(sym: Symbol) = sym.name
+    override fun visitVariable(variable: Variable) = variable.name
 
     override fun visitAbstraction(abs: Abstraction) = "λ${abs.param.name}.${abs.body.accept(this)}"
 
@@ -23,7 +23,7 @@ data object Serializer : TermVisitor<String> {
         }
         val serializedArg = app.arg.accept(this).let {
             when (app.arg) {
-                is Symbol -> it
+                is Variable -> it
                 else -> "($it)"
             }
         }

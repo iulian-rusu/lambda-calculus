@@ -2,7 +2,7 @@ package lambda.common
 
 import lambda.compiler.ast.Application
 import lambda.compiler.ast.Abstraction
-import lambda.compiler.ast.Symbol
+import lambda.compiler.ast.Variable
 import lambda.compiler.ast.Term
 
 operator fun Term.invoke(arg: Term) = Application(
@@ -10,9 +10,9 @@ operator fun Term.invoke(arg: Term) = Application(
     arg = arg
 )
 
-fun lambda(param: Symbol, body: () -> Term) = Abstraction(
+fun lambda(param: Variable, body: () -> Term) = Abstraction(
     param = param,
     body = body()
 )
 
-fun lambda(param: String, body: () -> Term) = lambda(Symbol(param), body)
+fun lambda(param: String, body: () -> Term) = lambda(Variable(param), body)

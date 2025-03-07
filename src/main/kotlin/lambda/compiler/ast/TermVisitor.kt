@@ -6,7 +6,7 @@ package lambda.compiler.ast
  * @param R The result of visiting
  */
 interface TermVisitor<R> {
-    fun visitSymbol(sym: Symbol): R
+    fun visitVariable(variable: Variable): R
     fun visitAbstraction(abs: Abstraction): R
     fun visitApplication(app: Application): R
 }
@@ -15,7 +15,7 @@ interface TermVisitor<R> {
  * TermVisitor that produces another Lambda Calculus term.
  */
 interface TermTransformer : TermVisitor<Term> {
-    override fun visitSymbol(sym: Symbol): Term = sym
+    override fun visitVariable(variable: Variable): Term = variable
 
     override fun visitAbstraction(abs: Abstraction): Term = Abstraction(
         param = abs.param,

@@ -10,12 +10,10 @@ import lambda.compiler.ast.TermTransformer
  * Beta reduction is equivalent to the concept of function application.
  */
 data object BetaReducer : TermTransformer {
-    override fun visitApplication(app: Application) = when (app.target) {
-        is Abstraction -> substitute(app.target, app.arg)
+    override fun visitApplication(app: Application) = when (val target = app.target) {
+        is Abstraction -> target.body.replace(target.param, app.arg)
         else -> app
     }
-
-    private fun substitute(abs: Abstraction, arg: Term) = abs.body.substitute(abs.param, arg)
 }
 
 fun Term.reduce() = accept(BetaReducer)

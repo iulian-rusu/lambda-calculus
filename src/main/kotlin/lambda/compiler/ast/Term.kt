@@ -8,29 +8,29 @@ sealed interface Term {
 }
 
 /**
- * A symbol is a named variable.
+ * A named variable.
  *
- * @param name  The name of the symbol
+ * @param name  The name of the variable
  */
-data class Symbol(val name: String) : Term {
-    override fun <T> accept(visitor: TermVisitor<T>) = visitor.visitSymbol(this)
+data class Variable(val name: String) : Term {
+    override fun <T> accept(visitor: TermVisitor<T>) = visitor.visitVariable(this)
 }
 
 /**
  *  An abstraction is a function definition, taking some bound symbol as input and returning the function body.
  *
- *  @param param    The bound symbol
+ *  @param param    The bound variable
  *  @param body     The returned body
  */
-data class Abstraction(val param: Symbol, val body: Term) : Term {
+data class Abstraction(val param: Variable, val body: Term) : Term {
     override fun <T> accept(visitor: TermVisitor<T>) = visitor.visitAbstraction(this)
 }
 
 /**
- * Returns true if the abstraction binds the symbol.
+ * Returns true if the abstraction binds the variable.
  * A symbol is bound by an abstraction if it has the same name as its parameter.
  */
-fun Abstraction.binds(sym: Symbol) = param == sym
+fun Abstraction.binds(variable: Variable) = param == variable
 
 /**
  * An application is a function call.

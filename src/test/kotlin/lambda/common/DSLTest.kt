@@ -2,7 +2,7 @@ package lambda.common
 
 import lambda.compiler.ast.Abstraction
 import lambda.compiler.ast.Application
-import lambda.compiler.ast.Symbol
+import lambda.compiler.ast.Variable
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -12,19 +12,19 @@ import kotlin.test.assertEquals
 class DSLTest {
     @Test
     fun `creating a lambda binds terms correctly`() {
-        val actual = lambda("x") { Symbol("x") }
-        val expected = Abstraction(Symbol("x"), Symbol("x"))
+        val actual = lambda("x") { Variable("x") }
+        val expected = Abstraction(Variable("x"), Variable("x"))
         assertEquals(expected, actual)
     }
 
     @Test
     fun `currying lambdas binds terms correctly`() {
-        val actual = lambda("x") { lambda("y") { lambda("z") { Symbol("z") } } }
+        val actual = lambda("x") { lambda("y") { lambda("z") { Variable("z") } } }
         val expected = Abstraction(
-            Symbol("x"),
+            Variable("x"),
             Abstraction(
-                Symbol("y"),
-                Abstraction(Symbol("z"), Symbol("z"))
+                Variable("y"),
+                Abstraction(Variable("z"), Variable("z"))
             )
         )
         assertEquals(expected, actual)
@@ -39,7 +39,7 @@ class DSLTest {
     companion object {
         @JvmStatic
         fun getApplicationsAndExpectedResults(): List<Arguments> {
-            val x = Symbol("x")
+            val x = Variable("x")
             return listOf(
                 Arguments.of(x(x), Application(x, x)),
                 Arguments.of((x)(x), Application(x, x)),
