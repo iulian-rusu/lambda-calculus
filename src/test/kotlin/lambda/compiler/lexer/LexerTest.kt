@@ -347,7 +347,7 @@ class LexerTest {
         }
 
         private fun assertExpectedTokenResults(source: String, expectedResults: List<TokenResult>) {
-            val actualResults = Lexer(source).tokens().toList()
+            val actualResults = Lexer(source).asSequence().toList()
             assertEquals(expectedResults.size, actualResults.size)
             expectedResults.zip(actualResults).forEach { (expected, actual) ->
                 assertEquals(expected, actual)

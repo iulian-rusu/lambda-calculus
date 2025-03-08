@@ -8,10 +8,17 @@ import lambda.compiler.result.Result
 
 typealias TokenResult = Result<Token>
 
-class Lexer(source: String) {
+class Lexer(source: String) : Iterator<TokenResult> {
     private val cursor: SourceCursor = SourceCursor(source)
+    private val tokenIterator: Iterator<TokenResult> = tokens().iterator()
 
-    fun tokens(): Sequence<TokenResult> = sequence {
+    override fun hasNext() = tokenIterator.hasNext()
+
+    override fun next() = tokenIterator.next()
+
+    fun nextOrNull(): TokenResult? = if (hasNext()) next() else null
+
+    private fun tokens(): Sequence<TokenResult> = sequence {
         while (true) {
             val char = cursor.currentChar ?: break
             when {
