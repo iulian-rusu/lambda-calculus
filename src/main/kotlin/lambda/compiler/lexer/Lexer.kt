@@ -3,22 +3,56 @@ package lambda.compiler.lexer
 import lambda.compiler.common.Location
 import lambda.compiler.common.SourceCursor
 import lambda.compiler.common.Span
-import lambda.compiler.result.LexicalError
-import lambda.compiler.result.Result
+import lambda.compiler.diagnostic.LexicalError
+import lambda.compiler.diagnostic.Result
+import lambda.compiler.diagnostic.asResult
+import lambda.compiler.diagnostic.map
+import lambda.compiler.diagnostic.valueOrElse
 
 typealias TokenResult = Result<Token>
 
 class Lexer(source: String) : Iterator<TokenResult> {
     private val cursor: SourceCursor = SourceCursor(source)
-    private val tokenIterator: Iterator<TokenResult> = tokens().iterator()
+    private val tokens: List<TokenResult> = tokenSequence().toList()
 
-    override fun hasNext() = tokenIterator.hasNext()
+    /**
+     * The index of the next token to be consumed by the iterator.
+     */
+    private var index: Int = 0
 
-    override fun next() = tokenIterator.next()
+    /**
+     * Queries whether the iterator has more elements.
+     */
+    override fun hasNext() = index < tokens.size
 
-    fun nextOrNull(): TokenResult? = if (hasNext()) next() else null
+    /**
+     * Consumes and returns the next token without checking if it exists.
+     *
+     * @throws NoSuchElementException if the iterator has no next element
+     */
+    override fun next() = nextOrNull() ?: throw NoSuchElementException("There are no more tokens")
 
-    private fun tokens(): Sequence<TokenResult> = sequence {
+    /**
+     * Consumes and returns the next token if it exists, otherwise returns null.
+     */
+    fun nextOrNull(): TokenResult? = tokens.getOrNull(index++)
+
+    /**
+     * Looks ahead at the next token without consuming it.
+     */
+    fun peek(): TokenResult? = tokens.getOrNull(index)
+
+    /**
+     * The location where processing of the next token starts.
+     */
+    fun location(): Location = when {
+        index > tokens.lastIndex -> cursor.location
+        else -> tokens[index]
+            .map { it.location }
+            .valueOrElse { it.error.location }
+    }
+
+    private fun tokenSequence(): Sequence<TokenResult> = sequence {
         while (true) {
             val char = cursor.currentChar ?: break
             when {
@@ -56,19 +90,17 @@ class Lexer(source: String) : Iterator<TokenResult> {
     }
 
     private suspend fun SequenceScope<TokenResult>.handleInvalidChar(char: Char) {
-        yieldError(
+        yield(
             LexicalError.InvalidChar(
                 char = char,
                 location = cursor.location,
-            )
+            ).asResult()
         )
         cursor.advance()
     }
 
     private suspend fun SequenceScope<TokenResult>.yieldToken(kind: TokenKind, span: Span, location: Location) =
         yield(Result.Ok(Token(kind, value = cursor[span], span, location)))
-
-    private suspend fun SequenceScope<TokenResult>.yieldError(error: LexicalError) = yield(Result.Error(error))
 
     private fun Char.isIgnored() = isWhitespace()
     private fun Char.isIdentifierStart() = isLetter() || this == '_'

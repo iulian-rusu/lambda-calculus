@@ -3,10 +3,13 @@ package lambda.compiler.lexer
 import lambda.TestUtils
 import lambda.compiler.common.Location
 import lambda.compiler.common.Span
-import lambda.compiler.result.LexicalError
-import lambda.compiler.result.Result
+import lambda.compiler.diagnostic.LexicalError
+import lambda.compiler.diagnostic.Result
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class LexerTest {
     @Test
@@ -339,6 +342,67 @@ class LexerTest {
             ),
         )
         assertExpectedTokenResults(source, expectedTokenResults)
+    }
+
+    @Test
+    fun `tokenizing an empty source returns an empty iterator`() {
+        val lexer = Lexer("")
+        assertFalse(lexer.hasNext())
+        assertEquals(null, lexer.nextOrNull())
+        assertEquals(null, lexer.peek())
+        assertThrows<NoSuchElementException> {
+            lexer.next()
+        }
+        assertEquals(Location(1, 1), lexer.location())
+    }
+
+    @Test
+    fun `the lexer correctly implements the iterator interface`() {
+        val lexer = Lexer("a $ b")
+        val expectedTokens = listOf(
+            Result.Ok(
+                Token(
+                    kind = TokenKind.IDENT,
+                    value = "a",
+                    span = Span(0, 1),
+                    location = Location(1, 1)
+                )
+            ),
+            Result.Error(
+                LexicalError.InvalidChar(
+                    char = '$',
+                    location = Location(1, 3)
+                )
+            ),
+            Result.Ok(
+                Token(
+                    kind = TokenKind.IDENT,
+                    value = "b",
+                    span = Span(4, 5),
+                    location = Location(1, 5)
+                )
+            )
+        )
+
+        // Peeking should not mutate the state of the lexer
+        repeat(2) {
+            assertEquals(Location(1, 1), lexer.location())
+            assertEquals(expectedTokens[0], lexer.peek())
+        }
+
+        assertTrue(lexer.hasNext())
+        assertEquals(expectedTokens[0], lexer.next())
+        assertEquals(Location(1, 3), lexer.location())
+
+        assertTrue(lexer.hasNext())
+        assertEquals(expectedTokens[1], lexer.next())
+        assertEquals(Location(1, 5), lexer.location())
+
+        assertTrue(lexer.hasNext())
+        assertEquals(expectedTokens[2], lexer.next())
+        assertEquals(Location(1, 6), lexer.location())
+
+        assertFalse(lexer.hasNext())
     }
 
     companion object {

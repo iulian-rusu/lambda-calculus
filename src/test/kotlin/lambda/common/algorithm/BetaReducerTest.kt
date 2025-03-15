@@ -2,6 +2,7 @@ package lambda.common.algorithm
 
 import lambda.common.invoke
 import lambda.common.lambda
+import lambda.compiler.ast.Abstraction
 import lambda.compiler.ast.Application
 import lambda.compiler.ast.Term
 import lambda.compiler.ast.Variable
@@ -15,6 +16,12 @@ class BetaReducerTest {
     @Test
     fun `reducing a variable does nothing`() {
         assertEquals(Variable("x"), Variable("x").reduce())
+    }
+
+    @Test
+    fun `reducing an irreducible abstraction does nothing`() {
+        val program = Abstraction(Variable("x"), Variable("x"))
+        assertEquals(program, program.reduce())
     }
 
     @Test
