@@ -43,10 +43,7 @@ class ParserTest {
 
     @ParameterizedTest
     @MethodSource("getInvalidSourcesAndExpectedErrors")
-    fun `parsing an invalid source returns an error`(
-        source: String,
-        error: SourceAnalysisError
-    ) {
+    fun `parsing an invalid source returns an error`(source: String, error: SourceAnalysisError) {
         val result = Parser(source).parse()
         assertEquals(Result.Error(error), result)
     }
@@ -262,14 +259,21 @@ class ParserTest {
             Arguments.of(
                 "",
                 SyntaxError.UnexpectedEndOfTerm(
-                    expectation = Parser.START_TOKEN_EXPECTATION,
+                    expectation = Parser.START_OF_TERM_EXPECTATION,
                     location = Location(1, 1)
+                )
+            ),
+            Arguments.of(
+                "(",
+                SyntaxError.UnexpectedEndOfTerm(
+                    expectation = Parser.START_OF_TERM_EXPECTATION,
+                    location = Location(1, 2)
                 )
             ),
             Arguments.of(
                 ")",
                 SyntaxError.UnexpectedToken(
-                    expectation = Parser.START_TOKEN_EXPECTATION,
+                    expectation = Parser.START_OF_TERM_EXPECTATION,
                     actualToken = Token(
                         kind = TokenKind.RIGHT_PAREN,
                         value = ")",
@@ -279,14 +283,54 @@ class ParserTest {
                 )
             ),
             Arguments.of(
+                "()",
+                SyntaxError.UnexpectedEndOfTerm(
+                    expectation = Parser.START_OF_TERM_EXPECTATION,
+                    location = Location(1, 2)
+                )
+            ),
+            Arguments.of(
+                "\\",
+                SyntaxError.UnexpectedEndOfTerm(
+                    expectation = TokenKindExpectation.of(TokenKind.IDENT),
+                    location = Location(1, 2)
+                )
+            ),
+            Arguments.of(
+                "\\x",
+                SyntaxError.UnexpectedEndOfTerm(
+                    expectation = TokenKindExpectation.of(TokenKind.DOT),
+                    location = Location(1, 3)
+                )
+            ),
+            Arguments.of(
+                "\\x.",
+                SyntaxError.UnexpectedEndOfTerm(
+                    expectation = Parser.START_OF_TERM_EXPECTATION,
+                    location = Location(1, 4)
+                )
+            ),
+            Arguments.of(
                 ".",
                 SyntaxError.UnexpectedToken(
-                    expectation = Parser.START_TOKEN_EXPECTATION,
+                    expectation = Parser.START_OF_TERM_EXPECTATION,
                     actualToken = Token(
                         kind = TokenKind.DOT,
                         value = ".",
                         span = Span(0, 1),
                         location = Location(1, 1)
+                    )
+                )
+            ),
+            Arguments.of(
+                "x.",
+                SyntaxError.UnexpectedToken(
+                    expectation = Parser.START_OF_TERM_EXPECTATION,
+                    actualToken = Token(
+                        kind = TokenKind.DOT,
+                        value = ".",
+                        span = Span(1, 2),
+                        location = Location(1, 2)
                     )
                 )
             ),
@@ -307,7 +351,7 @@ class ParserTest {
             Arguments.of(
                 "x)",
                 SyntaxError.UnexpectedToken(
-                    expectation = Parser.START_TOKEN_EXPECTATION,
+                    expectation = Parser.START_OF_TERM_EXPECTATION,
                     actualToken = Token(
                         kind = TokenKind.RIGHT_PAREN,
                         value = ")",
@@ -330,6 +374,85 @@ class ParserTest {
                     actualToken = Token(
                         kind = TokenKind.RIGHT_PAREN,
                         value = ")",
+                        span = Span(1, 2),
+                        location = Location(1, 2)
+                    )
+                )
+            ),
+            Arguments.of(
+                "(\\x y",
+                SyntaxError.UnexpectedToken(
+                    expectation = TokenKindExpectation.of(TokenKind.DOT),
+                    actualToken = Token(
+                        kind = TokenKind.IDENT,
+                        value = "y",
+                        span = Span(4, 5),
+                        location = Location(1, 5)
+                    )
+                )
+            ),
+            Arguments.of(
+                "(\\x y)",
+                SyntaxError.UnexpectedToken(
+                    expectation = TokenKindExpectation.of(TokenKind.DOT),
+                    actualToken = Token(
+                        kind = TokenKind.IDENT,
+                        value = "y",
+                        span = Span(4, 5),
+                        location = Location(1, 5)
+                    )
+                )
+            ),
+            Arguments.of(
+                "(\\x.)",
+                SyntaxError.UnexpectedEndOfTerm(
+                    expectation = Parser.START_OF_TERM_EXPECTATION,
+                    location = Location(1, 5)
+                )
+            ),
+            Arguments.of(
+                "\\x.)",
+                SyntaxError.UnexpectedToken(
+                    expectation = Parser.START_OF_TERM_EXPECTATION,
+                    actualToken = Token(
+                        kind = TokenKind.RIGHT_PAREN,
+                        value = ")",
+                        span = Span(3, 4),
+                        location = Location(1, 4)
+                    )
+                )
+            ),
+            Arguments.of(
+                "(\\x )",
+                SyntaxError.UnexpectedToken(
+                    expectation = TokenKindExpectation.of(TokenKind.DOT),
+                    actualToken = Token(
+                        kind = TokenKind.RIGHT_PAREN,
+                        value = ")",
+                        span = Span(4, 5),
+                        location = Location(1, 5)
+                    )
+                )
+            ),
+            Arguments.of(
+                "(\\ )",
+                SyntaxError.UnexpectedToken(
+                    expectation = TokenKindExpectation.of(TokenKind.IDENT),
+                    actualToken = Token(
+                        kind = TokenKind.RIGHT_PAREN,
+                        value = ")",
+                        span = Span(3, 4),
+                        location = Location(1, 4)
+                    )
+                )
+            ),
+            Arguments.of(
+                "(. )",
+                SyntaxError.UnexpectedToken(
+                    expectation = Parser.START_OF_TERM_EXPECTATION,
+                    actualToken = Token(
+                        kind = TokenKind.DOT,
+                        value = ".",
                         span = Span(1, 2),
                         location = Location(1, 2)
                     )

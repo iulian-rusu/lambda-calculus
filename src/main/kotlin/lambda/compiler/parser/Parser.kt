@@ -36,26 +36,21 @@ class Parser(source: String) {
      */
     private fun parseUntil(shouldStop: (Token) -> Boolean): Result<Term> {
         fun parseFromToken(startToken: Token): Result<Term> = when (startToken.kind) {
-            TokenKind.DOT, TokenKind.RIGHT_PAREN -> unexpectedToken(START_TOKEN_EXPECTATION, startToken)
+            TokenKind.DOT, TokenKind.RIGHT_PAREN -> unexpectedToken(START_OF_TERM_EXPECTATION, startToken)
             TokenKind.IDENT -> Result.Ok(Variable(startToken.value))
-            TokenKind.REVERSE_SOLIDUS -> {
-                expect(TokenKind.IDENT)
-                    .andThen { ident -> expect(TokenKind.DOT).map { ident } }
-                    .andThen { ident ->
-                        parseUntil(shouldStop).map { term ->
-                            Abstraction(
-                                param = Variable(ident.value),
-                                body = term
-                            )
-                        }
+            TokenKind.REVERSE_SOLIDUS -> expect(TokenKind.IDENT)
+                .andThen { ident -> expect(TokenKind.DOT).map { ident } }
+                .andThen { ident ->
+                    parseUntil(shouldStop).map { term ->
+                        Abstraction(
+                            param = Variable(ident.value),
+                            body = term
+                        )
                     }
-            }
+                }
 
-            TokenKind.LEFT_PAREN -> {
-                val term = parseUntil { it.kind == TokenKind.RIGHT_PAREN }
-                // Ensure parentheses are balanced
-                expect(TokenKind.RIGHT_PAREN).andThen { term }
-            }
+            TokenKind.LEFT_PAREN -> parseUntil { it.kind == TokenKind.RIGHT_PAREN }
+                .andThen { term -> expect(TokenKind.RIGHT_PAREN).map { term } }
         }
 
         var accumulator: Term? = null
@@ -76,7 +71,7 @@ class Parser(source: String) {
 
         return accumulator
             ?.let { Result.Ok(it) }
-            ?: unexpectedEndOfTerm(START_TOKEN_EXPECTATION)
+            ?: unexpectedEndOfTerm(START_OF_TERM_EXPECTATION)
     }
 
     private fun expect(expected: TokenKind): Result<Token> = lexer.nextOrNull()
@@ -100,7 +95,7 @@ class Parser(source: String) {
         SyntaxError.UnexpectedToken(expectation, actualToken).asResult()
 
     companion object {
-        val START_TOKEN_EXPECTATION = TokenKindExpectation.of(
+        val START_OF_TERM_EXPECTATION = TokenKindExpectation.of(
             TokenKind.IDENT,
             TokenKind.REVERSE_SOLIDUS,
             TokenKind.LEFT_PAREN
